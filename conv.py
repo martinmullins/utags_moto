@@ -6,20 +6,24 @@ def decodebool(f,s):
     f.read(3) #align 
     return data
 
-def encodebool(f,s):
-    pass
+def encodebool(f,utag):
+    f.write(struct.pack(">B",utag["data"]))
+    f.write('\x00'*3) #align
 
 def decodestr(f,s):
     typ=">"+str(s)+"c"
     data = ''.join(struct.unpack(typ,f.read(s)))
-    align = s%4
     if s%4:
         f.read(4-s%4) #align
 
     return data
 
 def encodestr(f,s):
-    pass
+    pos = f.tell()+len(s)+1
+    if s%4:
+        pos += 4-s%4
+    f.write(s)
+    f.seek(pos)
 
 class TypeConv:
     dataTypes = {
@@ -40,6 +44,7 @@ class TypeConv:
             "size": 8,
         },
     }
+
 
     def decode(self,name,f,s):
         """ pass the name, the filestream and the size of the data """
@@ -62,3 +67,33 @@ class TypeConv:
             data = decodestr(f,s)
 
         return data,typ
+
+    def encodeName(self, f, name):
+        """ helper function for writing a utags name, pad to 32 bytes """
+        offset = f.tell()+32
+        f.write(name)
+        f.seek(offset)
+
+    def encodeProps(self, f, utag):
+        f.write(struct.pack("<3I",
+            utag["size"],
+            utag["flags"],
+            utag["utility"]))
+
+    def encode(self,utag,f):
+        self.encodeName(f,utag["name"])
+        self.encodeProps(f,utag)
+        
+        for k in TypeCov.dataTypes.keys():
+            if utags["type"] == k:
+                if "encode" in TypeCov.dataTypes[k].keys():
+                    TypeConv.dataTypes[k]["encode"](f,utag)
+                else:
+                    assert TypeConv.dataTypes[k]["size"] == s, "incorrect size"
+                    f.write(struct.pack(TypeConv.dataTypes[k]["type"],
+                            utags["data"])
+                return
+
+        #else write raw
+        encodestr(f,utag)
+        return
