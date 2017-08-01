@@ -18,11 +18,13 @@ def decodestr(f,s):
 
     return data
 
-def encodestr(f,s):
-    pos = f.tell()+len(s)+1
+def encodestr(f,utag):
+    s = utag["size"]
+    assert s == len(utag["data"])
+    pos = f.tell()+s
     if s%4:
         pos += 4-s%4
-    f.write(s)
+    f.write(utag["data"])
     f.seek(pos)
 
 class TypeConv:
@@ -75,7 +77,7 @@ class TypeConv:
         f.seek(offset)
 
     def encodeProps(self, f, utag):
-        f.write(struct.pack("<3I",
+        f.write(struct.pack(">3I",
             utag["size"],
             utag["flags"],
             utag["utility"]))
@@ -84,14 +86,14 @@ class TypeConv:
         self.encodeName(f,utag["name"])
         self.encodeProps(f,utag)
         
-        for k in TypeCov.dataTypes.keys():
-            if utags["type"] == k:
-                if "encode" in TypeCov.dataTypes[k].keys():
+        for k in TypeConv.dataTypes.keys():
+            if utag["type"] == k:
+                if "encode" in TypeConv.dataTypes[k].keys():
                     TypeConv.dataTypes[k]["encode"](f,utag)
                 else:
-                    assert TypeConv.dataTypes[k]["size"] == s, "incorrect size"
+                    assert TypeConv.dataTypes[k]["size"] == utag["size"], "incorrect size"
                     f.write(struct.pack(TypeConv.dataTypes[k]["type"],
-                            utags["data"])
+                            utag["data"]))
                 return
 
         #else write raw

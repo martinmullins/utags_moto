@@ -30,15 +30,15 @@ def encode(decodedfile,outfile,size):
         f.seek(0)
 
         # write the Header
-        te.write(f,"__UTAG_HEAD__")
+        te.encodeName(f,"__UTAG_HEAD__")
         f.write('\x00'*12) #blank size,flags or utility
 
         #write utags
         for utag in data:
-            TypeConv.encode(utag,f)
+            te.encode(utag,f)
 
         # write the Tail
-        te.write(f,"__UTAG_TAIL__")
+        te.encodeName(f,"__UTAG_TAIL__")
         f.write('\x00'*12) #blank size,flags or utility
 
     return 0
@@ -53,8 +53,8 @@ def main():
     try:
         infile = sys.argv[1]
         outfile = sys.argv[2]
-        size = sys.argv[3]
-    except IndexError:
+        size = int(sys.argv[3])
+    except IndexError,TypeError:
         usage()
         return 1
 
