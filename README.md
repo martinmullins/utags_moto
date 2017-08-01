@@ -6,7 +6,8 @@ Encode and Decode motorolla utag images to get the utag contents.
 ```
 $ python decode.py utags >utags_decoded
 ```
-utags_decoded will contain the list of decoded utags
+utags_decoded will contain the list of decoded utags.
+It is possbile to add,remove and edit the files. A feature/limitation is that if a utag's string/raw data are modified, ensure the size field matches the edits to the string/raw data length.
 
 ## Encoding:
 It is now possible to encode the utags_decoded file back into a utag image.
@@ -20,7 +21,7 @@ Substitute the size below:
 ```
 $ python encode.py utags_decoded utagsNew <size-of-image>
 ```
-utagsNew is the encoded image and can be flashed to the device (Be carful and double check the file first)
+utagsNew is the encoded image and can be flashed to the device (review the file first).
 
 ## Reviewing
 Review the images.
