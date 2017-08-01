@@ -4,10 +4,10 @@ Encode and Decode motorolla utag images to get the utag contents.
 
 ## Decoding
 ```
-:
 $ python decode.py utags >utags_decoded
-# utags_decoded will contain the list of decoded utags
 ```
+utags_decoded will contain the list of decoded utags
+
 ## Encoding:
 It is now possible to encode the utags_decoded file back into a utag image.
 
