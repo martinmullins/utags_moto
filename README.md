@@ -1,7 +1,4 @@
 # utags_moto
-
-Encode and Decode motorolla utag images to get the utag contents.
-
 ## Decoding
 ```
 $ python decode.py utags >utags_decoded
