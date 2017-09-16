@@ -1,7 +1,4 @@
 # utags_moto
-
-Encode and Decode motorolla utag images to get the utag contents.
-
 ## Decoding
 ```
 $ python decode.py utags >utags_decoded
@@ -33,16 +30,18 @@ $ vimdiff utagsNew utagsOrig
 
 ## Additional Info
 Took the format of the image from the kernel driver: kernel/drivers/misc/utag
+Note from decompiling utags for the Moto G4 there is no name_only part of the struct.
+
 ```
 struct utag {
-	char                       name[32];             /*     0    32 */
-	char                       name_only[32];        /*    32    32 */
+	char                       name[32];             /*     0    32 */ /* G4 0-32 */
+	char                       name_only[32];        /*    32    32 */ /* Does not exist on aboot for moto g4 */
 	/* --- cacheline 1 boundary (64 bytes) --- */
-	uint32_t                   size;                 /*    64     4 */
-	uint32_t                   flags;                /*    68     4 */
-	uint32_t                   util;                 /*    72     4 */
-	void *                     payload;              /*    76     4 */
-	struct utag *              next;                 /*    80     4 */
+	uint32_t                   size;                 /*    64     4 */ /* G4 32-36 */
+	uint32_t                   flags;                /*    68     4 */ /* G4 36-40 */ /* write protection */
+	uint32_t                   util;                 /*    72     4 */ /* G4 40-44 */ /* util is used a function pointer to a validation function */ /* not utilized by aboot thaw tags */
+	void *                     payload;              /*    76     4 */ /* G4 44-48 */ /* malloced pointer to data */
+	struct utag *              next;                 /*    80     4 */ /* G4 48-52 */ /* next utag in the list */
 	struct utag *              prev;                 /*    84     4 */
 
 	/* size: 88, cachelines: 2, members: 8 */
