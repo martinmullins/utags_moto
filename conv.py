@@ -20,10 +20,16 @@ def decodestr(f,s):
 
 def encodestr(f,utag):
     s = utag["size"]
-    assert s == len(utag["data"])
-    pos = f.tell()+s
-    if s%4:
-        pos += 4-s%4
+    us = s
+    if us < 0:
+        us = -1*s
+
+    assert us == len(utag["data"]), \
+            "%s length mismatch: %d != %d"%(utag["name"],us,len(utag["data"]))
+
+    pos = f.tell()+us
+    if us%4:
+        pos += 4-us%4
     f.write(utag["data"])
     f.seek(pos)
 
@@ -77,7 +83,7 @@ class TypeConv:
         f.seek(offset)
 
     def encodeProps(self, f, utag):
-        f.write(struct.pack(">3I",
+        f.write(struct.pack(">3i",
             utag["size"],
             utag["flags"],
             utag["utility"]))
